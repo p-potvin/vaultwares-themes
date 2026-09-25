@@ -36,26 +36,40 @@ motion and typography are inherited from the Redesign unmodified.
 
 - [TOKENS.md](./TOKENS.md) — every variable, with usage
 - [COMPONENTS.md](./COMPONENTS.md) — shells, cards, LEDs, scrollbars
-- [vaultsqware.css](./vaultsqware.css) — the consolidated token file
+- [vaultsqware.css](./vaultsqware.css) — tokens, region shells, surfaces, LED, scrollbars (synced from vw-gui, Fri, 25 Sep 2026)
+- [components.css](./components.css) — every app component (`vwsq-*` classes): vw-gui's set generalised, plus tabs, table, alert, progress, menu, tooltip…
+- [react/](./react/index.tsx) — typed React wrappers over those classes, re-exporting every icon
+- [icons/](./icons/README.md) — 164 gapped-edge icons: `build.py` generates `svg/`, `sprite.svg`, `react/index.tsx`, `qt/vwsq_icons.qrc`, `icons.json`; `qt/vwsq_icon.py` is the Qt6 helper
+- [fonts/](./fonts/fonts.css) — Quicksand, Victor Mono, Monofett (SIL OFL), packaged locally
+
+The published design system (brand book, live component cards, icon assets):
+https://claude.ai/artifact/Kc9zVRhZSw2HkJ7tnAiuQk
 
 ## Status
 
-**Reference snapshot.** First consumer is
-[vw-gui](https://github.com/p-potvin/vw-gui), which currently carries its own
-copy at `css/vaultwares-square.css` while the design is being explored. This
-folder is the safe original to return to.
+vw-gui's `css/vaultwares-square.css` had moved ahead of this snapshot (local
+fonts, spine ramp, seam lighting); `vaultsqware.css` is now synced to it and
+this folder is again the source of truth. vw-gui's `css/app.css` components
+live on here as `components.css`.
 
 ## Usage
 
 ```html
 <link rel="stylesheet" href="vaultsqware/vaultsqware.css" />
+<link rel="stylesheet" href="vaultsqware/components.css" />
 ```
 
 ```html
-<body class="vwsq-console-shell">
-  <nav class="vwsq-warm-rail">…</nav>
-  <main>…</main>
+<body class="vwsq-app vwsq-console-shell">
+  <div class="vwsq-shell">
+    <nav class="vwsq-warm-rail vwsq-rail">…</nav>
+    <main class="vwsq-main">…</main>
+  </div>
 </body>
+```
+
+```tsx
+import { AppShell, Button, IconPlay } from "vaultsqware/react";
 ```
 
 Never use a raw hex outside `vaultsqware.css`. Reference `--vwsq-*` tokens.
