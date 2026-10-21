@@ -84,8 +84,9 @@ Hardware-LED semantics. Each has a `-soft` companion at 14% for fills.
 
 ## 5. Typography
 
-- `--vwsq-font-sans`: `"Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif`
-- `--vwsq-font-mono`: `"JetBrains Mono", ui-monospace, SFMono-Regular, monospace`
+- `--vwsq-font-sans`: `"Manrope", "Segoe UI", ui-sans-serif, system-ui, sans-serif` (the main font)
+- `--vwsq-font-mono`: `"Victor Mono", ui-monospace, SFMono-Regular, monospace`
+- `--vwsq-font-display`: `"Monofett", var(--vwsq-font-mono)` (identity only, used sparingly)
 
 Mono is used heavily — labels, badges, metadata, status text, durations, any
 technical readout — not only for code.

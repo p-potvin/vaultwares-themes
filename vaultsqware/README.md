@@ -40,7 +40,7 @@ motion and typography are inherited from the Redesign unmodified.
 - [components.css](./components.css) — every app component (`vwsq-*` classes): vw-gui's set generalised, plus tabs, table, alert, progress, menu, tooltip…
 - [react/](./react/index.tsx) — typed React wrappers over those classes, re-exporting every icon
 - [icons/](./icons/README.md) — 164 gapped-edge icons: `build.py` generates `svg/`, `sprite.svg`, `react/index.tsx`, `qt/vwsq_icons.qrc`, `icons.json`; `qt/vwsq_icon.py` is the Qt6 helper
-- [fonts/](./fonts/fonts.css) — Quicksand, Victor Mono, Monofett (SIL OFL), packaged locally
+- [fonts/](./fonts/fonts.css) — Manrope (main font), Victor Mono, Monofett (SIL OFL), packaged locally
 
 The published design system (brand book, live component cards, icon assets):
 https://claude.ai/artifact/Kc9zVRhZSw2HkJ7tnAiuQk

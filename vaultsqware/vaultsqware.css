@@ -20,11 +20,11 @@
 :root {
   /* -- Typography -------------------------------------------------------
      Packaged locally; the app never calls out to a font CDN.
-       Quicksand   — rounded geometric sans, softer than Inter
+       Manrope     — open geometric sans, the main text face (variable 200–800)
        Victor Mono — semi-rounded mono, distinctive without being noisy
        Monofett    — heavy stencil display, used sparingly for identity
      -------------------------------------------------------------------- */
-  --vwsq-font-sans: "Quicksand", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --vwsq-font-sans: "Manrope", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --vwsq-font-mono: "Victor Mono", ui-monospace, SFMono-Regular, monospace;
   --vwsq-font-display: "Monofett", var(--vwsq-font-mono);
 
