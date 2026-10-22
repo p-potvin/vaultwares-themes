@@ -21,11 +21,11 @@
   /* -- Typography -------------------------------------------------------
      Packaged locally; the app never calls out to a font CDN.
        Manrope     — open geometric sans, the main text face (variable 200–800)
-       Victor Mono — semi-rounded mono, distinctive without being noisy
+       SUSE Mono   — clean variable mono (100–800)
        Monofett    — heavy stencil display, used sparingly for identity
      -------------------------------------------------------------------- */
   --vwsq-font-sans: "Manrope", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --vwsq-font-mono: "Victor Mono", ui-monospace, SFMono-Regular, monospace;
+  --vwsq-font-mono: "SUSE Mono", ui-monospace, SFMono-Regular, monospace;
   --vwsq-font-display: "Monofett", var(--vwsq-font-mono);
 
   /* ----------------------------------------------------------------------
@@ -113,6 +113,17 @@
   --vwsq-signal-warning-soft: rgba(233, 176, 84, 0.14);
   --vwsq-signal-alert-soft: rgba(244, 93, 107, 0.14);
   --vwsq-signal-sync-soft: rgba(165, 133, 245, 0.14);
+
+  /* ----------------------------------------------------------------------
+     DOMAIN — what a screen or an edit touches. Not a status: a record in a
+     catalog database (cool teal, hollow ring) versus a file on disk or its
+     sidecar (hot orange, solid square). Hues no signal uses; always paired
+     with the shape and a text label, never colour alone.
+     ---------------------------------------------------------------------- */
+  --vwsq-domain-record: #3cc9bd;      /* catalog record (database row)      */
+  --vwsq-domain-file: #f27b3a;        /* media file on disk / its sidecar   */
+  --vwsq-domain-record-soft: rgba(60, 201, 189, 0.12);
+  --vwsq-domain-file-soft: rgba(242, 123, 58, 0.12);
 
   /* ----------------------------------------------------------------------
      SPINE RAMP — one shade per rail category.

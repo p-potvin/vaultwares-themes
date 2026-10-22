@@ -82,10 +82,22 @@ Hardware-LED semantics. Each has a `-soft` companion at 14% for fills.
 | `--vwsq-signal-sync` | `#A585F5` | Syncing, queued, background job |
 | `--vwsq-signal-idle` | `#6B7385` | Dormant, never run |
 
+### Domain
+
+What a screen or an edit touches — not a status. Always paired with a shape and a
+text label (`Catalog record` / `File on disk`), never colour alone.
+
+| Token | Value | Use |
+|---|---|---|
+| `--vwsq-domain-record` | `#3CC9BD` | Catalog record (a database row); hollow ring LED |
+| `--vwsq-domain-file` | `#F27B3A` | Media file on disk or its sidecar; solid square LED |
+
+Each has a `-soft` tint (12 %) for fills.
+
 ## 5. Typography
 
 - `--vwsq-font-sans`: `"Manrope", "Segoe UI", ui-sans-serif, system-ui, sans-serif` (the main font)
-- `--vwsq-font-mono`: `"Victor Mono", ui-monospace, SFMono-Regular, monospace`
+- `--vwsq-font-mono`: `"SUSE Mono", ui-monospace, SFMono-Regular, monospace`
 - `--vwsq-font-display`: `"Monofett", var(--vwsq-font-mono)` (identity only, used sparingly)
 
 Mono is used heavily — labels, badges, metadata, status text, durations, any
