@@ -1,7 +1,8 @@
 /* Packaged locally so the app never calls out to Google's servers.
    Copied from vw-gui (fonts/_fetch.js, Google Fonts CSS API).
    Manrope, SUSE Mono and Monofett are all SIL Open Font License 1.1. Manrope (200–800) and SUSE Mono
-   (100–800, roman + italic, SUSE-Mono-OFL.txt) are variable fonts shipped as TTF. */
+   (roman + italic, SUSE-Mono-OFL.txt) are variable fonts shipped as TTF. SUSE Mono is
+   declared 400–800 so no text renders thinner than 400 (lighter requests clamp to 400). */
 
 @font-face {
   font-family: 'Monofett';
@@ -32,7 +33,7 @@
 @font-face {
   font-family: 'SUSE Mono';
   font-style: normal;
-  font-weight: 100 800;
+  font-weight: 400 800;
   font-display: swap;
   src: url('suse-mono-100-800.ttf') format('truetype');
 }
@@ -40,7 +41,7 @@
 @font-face {
   font-family: 'SUSE Mono';
   font-style: italic;
-  font-weight: 100 800;
+  font-weight: 400 800;
   font-display: swap;
   src: url('suse-mono-100-800-italic.ttf') format('truetype');
 }

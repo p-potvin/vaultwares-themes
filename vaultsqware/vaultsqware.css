@@ -21,7 +21,7 @@
   /* -- Typography -------------------------------------------------------
      Packaged locally; the app never calls out to a font CDN.
        Manrope     — open geometric sans, the main text face (variable 200–800)
-       SUSE Mono   — clean variable mono (100–800)
+       SUSE Mono   — clean variable mono, 400–800 (never thinner)
        Monofett    — heavy stencil display, used sparingly for identity
      -------------------------------------------------------------------- */
   --vwsq-font-sans: "Manrope", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
@@ -116,7 +116,7 @@
 
   /* ----------------------------------------------------------------------
      DOMAIN — what a screen or an edit touches. Not a status: a record in a
-     catalog database (cool teal, hollow ring) versus a file on disk or its
+     catalog database (cool teal, solid triangle) versus a file on disk or its
      sidecar (hot orange, solid square). Hues no signal uses; always paired
      with the shape and a text label, never colour alone.
      ---------------------------------------------------------------------- */

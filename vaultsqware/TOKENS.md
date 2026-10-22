@@ -89,7 +89,7 @@ text label (`Catalog record` / `File on disk`), never colour alone.
 
 | Token | Value | Use |
 |---|---|---|
-| `--vwsq-domain-record` | `#3CC9BD` | Catalog record (a database row); hollow ring LED |
+| `--vwsq-domain-record` | `#3CC9BD` | Catalog record (a database row); solid triangle LED |
 | `--vwsq-domain-file` | `#F27B3A` | Media file on disk or its sidecar; solid square LED |
 
 Each has a `-soft` tint (12 %) for fills.
