@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><title>vaultnoir previews</title>
+<style>body{margin:0;background:#333;font:12px sans-serif;color:#ccc} .row{margin:8px} iframe{width:980px;border:0;display:block;background:#000}</style></head>
+<body><div id="out"></div>
+<script>
+const comps = ["Cover","TopBar","Toolbar","Button","Chip","Rating","Card","Badge","KeySheet","Stats","Tabs","Alert","Empty","SkeletonGrid","Toasts","Field"];
+const theme = new URLSearchParams(location.search).get("theme") || "dark";
+const head = `<link rel="stylesheet" href="${location.origin}/build/fonts.css"><link rel="stylesheet" href="${location.origin}/build/tokens.css">
+<link rel="stylesheet" href="${location.origin}/project/components/bundle.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"><\/script>
+<script src="${location.origin}/project/components/bundle.js"><\/script>
+<style>:root{--font-ui:"Inter Tight",sans-serif}</style>`;
+(async () => {
+  for (const c of comps) {
+    const html = await (await fetch(`/project/components/${c}/preview.html`)).text();
+    const h = +(/height=(\d+)/.exec(html) || [0, 120])[1];
+    const d = document.createElement("div"); d.className = "row"; d.innerHTML = `<div>${c}</div>`;
+    const f = document.createElement("iframe"); f.style.height = (h + 20) + "px";
+    f.srcdoc = `<!doctype html><html data-theme="${theme}"><head>${head}</head><body style="margin:0;background:var(--vwnr-bg)">${html}</body></html>`;
+    d.appendChild(f); document.getElementById("out").appendChild(d);
+  }
+})();
+</script></body></html>

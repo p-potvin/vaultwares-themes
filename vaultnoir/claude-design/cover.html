@@ -1,0 +1,34 @@
+<!-- @dsCard height=288 -->
+<style>
+  .cv { position: relative; width: 960px; height: 288px; background: var(--vwnr-bg); overflow: hidden; }
+  .cv svg { position: absolute; inset: 0; }
+  .red { fill: var(--vwnr-cat-1); } .sky { fill: var(--vwnr-cat-2); } .violet { fill: var(--vwnr-cat-3); }
+  .pink { fill: var(--vwnr-cat-4); } .amber { fill: var(--vwnr-cat-5); } .deep { fill: var(--vwnr-surface-3); }
+  .tile { rx: var(--vwnr-radius-xl); ry: var(--vwnr-radius-xl); }
+  .lens { fill: none; stroke: var(--vwnr-bg); stroke-width: 1.6; }
+  .pupil { fill: var(--vwnr-bg); }
+  .name { position: absolute; left: 40px; bottom: 40px; width: 440px; }
+  .name h1 { margin: 0; font: 650 80px/0.92 var(--font-ui, "Inter Tight", sans-serif); letter-spacing: -0.03em; color: var(--vwnr-text); }
+  .name p { margin: 12px 0 0; font: 400 14px/1.4 var(--font-ui, "Inter Tight", sans-serif); color: var(--vwnr-muted); }
+</style>
+<div class="cv">
+  <svg viewBox="0 0 960 288" width="960" height="288" aria-hidden="true">
+    <!-- blocks: red cat-1 160x288 slab (bleeds top and bottom), sky cat-2 240x120, violet cat-3 120x136, pink cat-4 104x58, amber cat-5 104x62, deep surface-3 96x96; radius-xl 12
+         arrangement: one tall slab with satellites, right of x=480, gaps of space-4 (16)
+         pattern: the circles motif (Panopticam's eye, the Ask bar's icon) as three lenses cut from the red slab, because the system is built around watching and asking
+         steps: space-4 16 gaps, lens radii 24 / 48 / 72 (space-6 multiples), stroke 1.6 = the icon stroke -->
+    <rect class="red tile" x="520" y="-12" width="160" height="312" />
+    <circle class="lens" cx="600" cy="144" r="72" /><circle class="lens" cx="600" cy="144" r="48" /><circle class="lens" cx="600" cy="144" r="24" />
+    <circle class="pupil" cx="600" cy="144" r="7" />
+    <rect class="sky tile" x="696" y="-12" width="276" height="132" />
+    <rect class="violet tile" x="696" y="136" width="120" height="164" />
+    <rect class="pink tile" x="832" y="136" width="140" height="58" />
+    <rect class="amber tile" x="832" y="210" width="104" height="90" />
+    <rect class="deep tile" x="952" y="210" width="96" height="96" />
+    <rect class="deep tile" x="480" y="-60" width="24" height="120" />
+  </svg>
+  <div class="name">
+    <h1>vaultnoir</h1>
+    <p>Panopticam's UI as a design system: near-black or light, one accent, quick and keyboard-first.</p>
+  </div>
+</div>
