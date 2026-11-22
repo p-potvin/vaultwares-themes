@@ -2,7 +2,7 @@
    Import the CSS once: vaultnoir/vaultnoir.css then vaultnoir/components.css. */
 
 import {
-  useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState,
+  useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState,
   type ButtonHTMLAttributes, type CSSProperties, type InputHTMLAttributes, type ReactNode, type Ref, type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
@@ -105,7 +105,7 @@ export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
 export function Switch({ checked, onChange, children }: { checked: boolean; onChange: (v: boolean) => void; children?: ReactNode }) {
   return (
     <label className="vwnr-switch">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span />{children}
     </label>
   );
@@ -129,7 +129,9 @@ export function Tooltip({ tip, children }: { tip: ReactNode; children: ReactNode
   const ref = useRef<HTMLSpanElement>(null);
   const [at, setAt] = useState<{ x: number; y: number } | null>(null);
   const show = () => {
-    const r = ref.current?.getBoundingClientRect();
+    // The wrapper is display: contents (no box of its own): measure what it wraps.
+    const el = (ref.current?.firstElementChild as HTMLElement | null) ?? ref.current;
+    const r = el?.getBoundingClientRect();
     if (r) setAt({ x: Math.min(r.left, window.innerWidth - 356), y: r.bottom + 6 });
   };
   useEffect(() => {
@@ -171,14 +173,27 @@ export function AskBar({ value, onChange, onCommit, onClear, placeholder, tip, a
   value: string; onChange: (v: string) => void; onCommit: (v: string) => void; onClear: () => void;
   placeholder: string; tip: ReactNode; active?: boolean; inputRef?: Ref<HTMLInputElement>;
 }) {
+  const descId = useId();
+  const committed = useRef(value);
+  const commit = () => {
+    if (value === committed.current) return;   // Enter then blur, or blur after Enter: one commit per question
+    committed.current = value;
+    onCommit(value);
+  };
+  const clear = () => { committed.current = ""; onClear(); };
   return (
     <Tooltip tip={tip}>
       <label className={cx("vwnr-search", "ask", active && "on")}>
         <IconAsk size={16} />
         <input ref={inputRef} value={value} placeholder={placeholder} spellCheck={false} aria-label="Ask"
-          onChange={(e) => onChange(e.target.value)} onBlur={() => onCommit(value)}
-          onKeyDown={(e) => { if (e.key === "Enter") onCommit(value); }} />
-        {value ? <button type="button" className="vwnr-icon-btn" aria-label="Clear" onClick={onClear}><IconX size={14} /></button> : null}
+          aria-describedby={descId}
+          onChange={(e) => onChange(e.target.value)} onBlur={commit}
+          onKeyDown={(e) => { if (e.key === "Enter") commit(); }} />
+        <span id={descId} className="vwnr-sr">{tip}</span>
+        {value ? (
+          <button type="button" className="vwnr-icon-btn" aria-label="Clear"
+            onMouseDown={(e) => e.preventDefault()} onClick={clear}><IconX size={14} /></button>
+        ) : null}
       </label>
     </Tooltip>
   );
@@ -192,7 +207,7 @@ export function ReadAs({ parts, onDrop, end }: { parts: ReadPart[]; onDrop: (key
     <div className="vwnr-readas">
       <span className="vwnr-small">Read as</span>
       {parts.map((p) => p.kind === "look"
-        ? <Chip key={p.key} tone="dashed" size="sm" title="Searched by meaning">{p.label}</Chip>
+        ? <Chip key={p.key} tone="dashed" size="sm" title="Searched by meaning: drop it" onClick={() => onDrop(p.key)}>{p.label}<IconX size={12} /></Chip>
         : <Chip key={p.key} on size="sm" title="Drop this part" onClick={() => onDrop(p.key)}>{p.label}<IconX size={12} /></Chip>)}
       {end}
     </div>
@@ -214,10 +229,17 @@ export type Page = { id: string; label: string; icon: ReactNode; key?: string; c
 
 /** Visits per page, kept per viewer. The home page always comes first; the others by use, most used first. */
 export function usePageOrder(pages: Page[], home: string, current: string, storeKey = "vwnr.pages") {
-  const [uses, setUses] = useState<Record<string, number>>(() => load(storeKey, {}));
+  // Counts belong to one store key: a new key (another viewer) starts from its own stored counts.
+  const [byKey, setByKey] = useState<{ key: string; uses: Record<string, number> }>(
+    () => ({ key: storeKey, uses: load(storeKey, {}) }));
   useEffect(() => {
-    setUses((u) => { const n = { ...u, [current]: (u[current] ?? 0) + 1 }; save(storeKey, n); return n; });
+    setByKey((prev) => {
+      const base = prev.key === storeKey ? prev.uses : load<Record<string, number>>(storeKey, {});
+      return { key: storeKey, uses: { ...base, [current]: (base[current] ?? 0) + 1 } };
+    });
   }, [current, storeKey]);
+  useEffect(() => { save(byKey.key, byKey.uses); }, [byKey]);
+  const uses = byKey.uses;
   return useMemo(() => {
     const order = new Map(pages.map((p, i) => [p.id, i]));
     const rest = pages.filter((p) => p.id !== home)
@@ -253,10 +275,25 @@ export function TopBar({ brand, pages, current, onGo, end }: {
     return () => ro.disconnect();
   }, [measure, pages]);
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const closeMenu = (refocus: boolean) => { setOpen(false); if (refocus) btn.current?.focus(); };
   useEffect(() => {
     if (!open) return undefined;
+    const items = () => Array.from(menuRef.current?.querySelectorAll<HTMLElement>("[role=menuitem]") ?? []);
+    (items().find((i) => i.getAttribute("aria-current") === "page") ?? items()[0])?.focus();
     const close = (e: Event) => { if (!(e.target as Element)?.closest?.(".vwnr-menu, .vwnr-allpages")) setOpen(false); };
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.preventDefault(); closeMenu(true); return; }
+      if (e.key === "Tab") { closeMenu(false); return; }
+      if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+      const list = items();
+      if (!list.length) return;
+      e.preventDefault();
+      const i = list.indexOf(document.activeElement as HTMLElement);
+      const next = e.key === "Home" ? 0 : e.key === "End" ? list.length - 1
+        : (i + (e.key === "ArrowDown" ? 1 : -1) + list.length) % list.length;
+      list[next].focus();
+    };
     window.addEventListener("pointerdown", close);
     window.addEventListener("keydown", esc);
     return () => { window.removeEventListener("pointerdown", close); window.removeEventListener("keydown", esc); };
@@ -285,10 +322,10 @@ export function TopBar({ brand, pages, current, onGo, end }: {
       </button>
       <div className="vwnr-topbar-end">{end}</div>
       {open ? createPortal(
-        <div className="vwnr-menu" role="menu" style={{ top: (r?.bottom ?? 48) + 6, left: r?.left ?? 0 }}>
+        <div ref={menuRef} className="vwnr-menu" role="menu" aria-label="All pages" style={{ top: (r?.bottom ?? 48) + 6, left: r?.left ?? 0 }}>
           {pages.map((p) => (
-            <button key={p.id} type="button" role="menuitem" className="vwnr-menu-item"
-              aria-current={p.id === current ? "page" : undefined} onClick={() => { setOpen(false); onGo(p.id); }}>
+            <button key={p.id} type="button" role="menuitem" className="vwnr-menu-item" tabIndex={-1}
+              aria-current={p.id === current ? "page" : undefined} onClick={() => { closeMenu(true); onGo(p.id); }}>
               {p.icon}<span>{p.label}</span>{p.key ? <Keys keys={["G", p.key]} /> : null}
             </button>
           ))}
@@ -361,7 +398,7 @@ export function Card({ media, shape = "wide", title, meta, tag, score, actions, 
 }) {
   return (
     <div className="vwnr-card" role="listitem" tabIndex={0} aria-selected={selected || undefined}
-      onClick={onOpen} onKeyDown={(e) => { if (e.key === "Enter") onOpen?.(); }}>
+      onClick={onOpen} onKeyDown={(e) => { if (e.key === "Enter" && e.target === e.currentTarget) onOpen?.(); }}>
       <div className={cx("vwnr-card-media", shape !== "wide" && shape)}>
         {media}
         {tag ? <span className="vwnr-card-tag">{tag}</span> : null}
@@ -384,14 +421,17 @@ export function useGridKeys(gridRef: RefObject<HTMLElement | null>) {
     const onKey = (e: KeyboardEvent) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
       const cards = Array.from(el.querySelectorAll<HTMLElement>(".vwnr-card"));
-      const i = cards.indexOf(document.activeElement as HTMLElement);
+      // Focus may sit on a card's action button: move from the card that holds it.
+      const active = (document.activeElement as HTMLElement | null)?.closest?.(".vwnr-card") as HTMLElement | null;
+      const i = active ? cards.indexOf(active) : -1;
       if (i < 0) return;
       const top = cards[0].offsetTop;
       const perRow = Math.max(1, cards.filter((c) => c.offsetTop === top).length);
-      const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -perRow, ArrowDown: perRow }[e.key]!;
-      const next = cards[Math.min(cards.length - 1, Math.max(0, i + step))];
+      const steps: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -perRow, ArrowDown: perRow };
+      const target = i + steps[e.key];
       e.preventDefault();
-      next.focus();
+      if (target < 0 || target >= cards.length) return;   // no card there: stay (no sideways jump to the last one)
+      cards[target].focus();
     };
     el.addEventListener("keydown", onKey);
     return () => el.removeEventListener("keydown", onKey);

@@ -74,7 +74,8 @@ function App() {
       <TopBar brand={<><IconAsk size={22} />vaultnoir</>} pages={ordered} current={page} onGo={setPage}
         end={<>
           <Seg label="Theme" value={theme} onChange={setTheme} options={[
-            { value: "dark", label: <IconMoon size={14} /> }, { value: "light", label: <IconSun size={14} /> }, { value: "system", label: "Auto" },
+            { value: "dark", label: <><IconMoon size={14} /><span className="vwnr-sr">Dark</span></> },
+            { value: "light", label: <><IconSun size={14} /><span className="vwnr-sr">Light</span></> }, { value: "system", label: "Auto" },
           ]} />
           <div className="vwnr-seg" role="group" aria-label="Accent">
             {ACCENTS.map((a) => (
