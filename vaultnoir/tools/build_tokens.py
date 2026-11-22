@@ -77,6 +77,16 @@ def reach(h: str, against: str, target: float, direction: int) -> str:
     return c
 
 
+def reach_on(h: str, grounds, target: float, direction: int) -> str:
+    """Like reach, against every ground ``grounds(c)`` returns (a ground may depend on the colour: its own tint)."""
+    c = h
+    for _ in range(100):
+        if all(ratio(c, g) >= target for g in grounds(c)):
+            return c
+        c = shift(c, 0.01 * direction)
+    return c
+
+
 def mix(a: str, b: str, t: float) -> str:
     """t of ``a`` over ``b``."""
     return hexs(tuple(x * t + y * (1 - t) for x, y in zip(rgb(a), rgb(b))))
@@ -92,7 +102,8 @@ def accent_set(base: str, mode: str) -> dict[str, str]:
     d = 1 if mode == "dark" else -1          # towards more contrast on this mode's surfaces
     worst = n["surface-3"]
     mark = reach(base, worst, 3.0, d)
-    text = reach(base, worst, 4.5, d)
+    soft_a = 0.14 if mode == "dark" else 0.12
+    text = reach_on(base, lambda c: [worst, mix(mark, worst, soft_a), mix(mark, n["surface"], soft_a)], 4.5, d)
     fill, label = base, "#ffffff"
     if ratio(fill, "#ffffff") < 4.5:
         darker = reach(base, "#ffffff", 4.5, -1)
@@ -107,7 +118,7 @@ def accent_set(base: str, mode: str) -> dict[str, str]:
     ramp = [mix(mark, n["surface"], t) for t in (0.2, 0.4, 0.6, 0.8, 1.0)]
     return {
         "accent": mark, "accent-text": text, "accent-fill": fill, "accent-fill-hover": hover, "accent-on": label,
-        "accent-soft": rgba(mark, 0.14 if mode == "dark" else 0.12), "accent-softer": rgba(mark, 0.08),
+        "accent-soft": rgba(mark, soft_a), "accent-softer": rgba(mark, 0.08),
         **{f"ramp-{i + 1}": c for i, c in enumerate(ramp)},
     }
 
@@ -116,10 +127,12 @@ def signal_set(mode: str) -> dict[str, str]:
     n = NEUTRALS[mode]
     d = 1 if mode == "dark" else -1
     out = {}
+    a = 0.14 if mode == "dark" else 0.12
     for k, v in SIGNALS.items():
-        c = reach(v, n["surface-3"], 4.5, d)
+        # On surface-3, and on its own tint (badges) over the page and over surface-3.
+        c = reach_on(v, lambda c: [n["surface-3"], mix(c, n["surface"], a), mix(c, n["surface-3"], a)], 4.5, d)
         out[k] = c
-        out[f"{k}-soft"] = rgba(c, 0.14 if mode == "dark" else 0.12)
+        out[f"{k}-soft"] = rgba(c, a)
     return out
 
 
@@ -176,7 +189,9 @@ def main() -> None:
         table.append({"mode": mode, "neutral": "faint (UI only)", "on_surface": round(ratio(n["faint"], n["surface"]), 2)})
         table.append({"mode": mode, "neutral": "focus ring", "on_surface3": round(ratio(n["focus"], n["surface-3"]), 2)})
         for k in SIGNALS:
-            table.append({"mode": mode, "signal": k, "value": s[k], "on_surface3": round(ratio(s[k], n["surface-3"]), 2)})
+            a = 0.14 if mode == "dark" else 0.12
+            table.append({"mode": mode, "signal": k, "value": s[k], "on_surface3": round(ratio(s[k], n["surface-3"]), 2),
+                          "on_own_tint": round(min(ratio(s[k], mix(s[k], n["surface"], a)), ratio(s[k], mix(s[k], n["surface-3"], a))), 2)})
     (ROOT / "tokens.css").write_text("\n".join(css), encoding="utf-8", newline="\n")
     (ROOT / "tokens.json").write_text(json.dumps({"tokens": data, "contrast": table}, indent=2) + "\n",
                                       encoding="utf-8", newline="\n")
