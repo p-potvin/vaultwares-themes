@@ -1,0 +1,114 @@
+/* vaultnoir: Panopticam's UI as a design system (operator, Sun, 22 Nov 2026).
+   Near-black neutrals, one accent (red by default), Inter Tight + JetBrains Mono, quick motion, dark + light.
+   Colours live in tokens.css (generated, checked against WCAG AA); this file adds the geometry, type, motion and
+   base elements. Never use a raw hex outside tokens.css: reference --vwnr-* tokens. */
+
+@import url("./fonts/fonts.css");
+@import url("./tokens.css");
+
+:root {
+  color-scheme: dark;
+
+  /* type: body 14 / 1.45, scale 1.2 */
+  --vwnr-font-ui: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --vwnr-font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --vwnr-text-xs: 11px;
+  --vwnr-text-sm: 12px;
+  --vwnr-text-md: 14px;
+  --vwnr-text-lg: 17px;
+  --vwnr-text-xl: 20px;
+  --vwnr-text-2xl: 24px;
+  --vwnr-text-3xl: 29px;
+  --vwnr-leading: 1.45;
+  --vwnr-leading-tight: 1.2;
+
+  /* geometry */
+  --vwnr-space-1: 4px;
+  --vwnr-space-2: 8px;
+  --vwnr-space-3: 12px;
+  --vwnr-space-4: 16px;
+  --vwnr-space-5: 20px;
+  --vwnr-space-6: 24px;
+  --vwnr-space-8: 32px;
+  --vwnr-radius-xs: 4px;
+  --vwnr-radius-sm: 7px;
+  --vwnr-radius: 8px;
+  --vwnr-radius-md: 9px;
+  --vwnr-radius-lg: 10px;
+  --vwnr-radius-xl: 12px;
+  --vwnr-radius-pill: 999px;
+  --vwnr-topbar: 56px;
+  --vwnr-control: 34px;
+  --vwnr-control-sm: 28px;
+  --vwnr-input: 38px;
+  --vwnr-chip: 30px;
+  --vwnr-row: 36px;
+  --vwnr-card-min: 200px;     /* the card-size slider writes this: 180 to 220 by default */
+  --vwnr-gap: 12px;
+  --vwnr-target: 32px;        /* click-target floor (mouse first) */
+
+  /* motion: quick, no page transitions */
+  --vwnr-fast: 120ms;
+  --vwnr-base: 150ms;
+  --vwnr-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* layers */
+  --vwnr-z-bar: 40;
+  --vwnr-z-menu: 70;
+  --vwnr-z-modal: 80;
+  --vwnr-z-toast: 90;
+}
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --vwnr-fast: 0ms; --vwnr-base: 0ms; }
+  *, *::before, *::after { animation-duration: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0ms !important; }
+}
+
+/* ---- base ---------------------------------------------------------------- */
+
+.vwnr, .vwnr * { box-sizing: border-box; }
+.vwnr {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--vwnr-bg);
+  color: var(--vwnr-text);
+  font: var(--vwnr-text-md) / var(--vwnr-leading) var(--vwnr-font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+/* resets at zero specificity, so a component class always wins */
+:where(.vwnr) :where(button, input, select, textarea) { font: inherit; color: inherit; }
+:where(.vwnr) :where(button) { cursor: pointer; background: none; border: 0; padding: 0; }
+:where(.vwnr) :where(a) { color: inherit; text-decoration: none; }
+.vwnr a.vwnr-link, .vwnr .vwnr-prose a { color: var(--vwnr-accent-text); text-decoration: underline; text-underline-offset: 2px; }
+.vwnr :focus-visible { outline: 2px solid var(--vwnr-focus); outline-offset: 2px; border-radius: var(--vwnr-radius-xs); }
+.vwnr ::selection { background: var(--vwnr-accent-soft); }
+.vwnr code {
+  font-family: var(--vwnr-font-mono); font-size: var(--vwnr-text-sm);
+  background: var(--vwnr-surface-3); padding: 1px 5px; border-radius: var(--vwnr-radius-xs);
+}
+.vwnr h1, .vwnr h2, .vwnr h3, .vwnr h4 { margin: 0; line-height: var(--vwnr-leading-tight); font-weight: 600; letter-spacing: -0.01em; }
+.vwnr h1 { font-size: var(--vwnr-text-3xl); }
+.vwnr h2 { font-size: var(--vwnr-text-2xl); }
+.vwnr h3 { font-size: var(--vwnr-text-xl); }
+.vwnr h4 { font-size: var(--vwnr-text-lg); }
+
+/* scrollbars: thin, on the surface */
+.vwnr * { scrollbar-width: thin; scrollbar-color: var(--vwnr-line-2) transparent; }
+
+/* ---- text helpers ---------------------------------------------------------- */
+
+.vwnr-muted { color: var(--vwnr-muted); }
+.vwnr-faint { color: var(--vwnr-faint); }          /* hints and icons only: 3:1, not for reading */
+.vwnr-small { font-size: var(--vwnr-text-sm); }
+.vwnr-mono { font-family: var(--vwnr-font-mono); }
+.vwnr-num { font-family: var(--vwnr-font-mono); font-variant-numeric: tabular-nums; }
+.vwnr-accent { color: var(--vwnr-accent-text); }
+.vwnr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---- print: content only, on white ----------------------------------------- */
+
+@media print {
+  .vwnr { background: white; color: black; }
+  .vwnr-topbar, .vwnr-toolbar, .vwnr-toasts, .vwnr-menu { display: none !important; }
+}
